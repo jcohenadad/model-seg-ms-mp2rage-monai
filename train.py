@@ -164,3 +164,20 @@ train_loader = DataLoader(train_ds, batch_size=2, shuffle=True, num_workers=4)
 val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=4)
 # val_ds = Dataset(data=val_files, transform=val_transforms)
 val_loader = DataLoader(val_ds, batch_size=1, num_workers=4)
+
+# Create Model, Loss, Optimizer
+# standard PyTorch program style: create UNet, DiceLoss and Adam optimizer
+device = torch.device("cuda:0")
+model = UNet(
+    spatial_dims=3,
+    in_channels=1,
+    out_channels=2,
+    channels=(16, 32, 64, 128, 256),
+    strides=(2, 2, 2, 2),
+    num_res_units=2,
+    norm=Norm.BATCH,
+).to(device)
+loss_function = DiceLoss(to_onehot_y=True, softmax=True)
+optimizer = torch.optim.Adam(model.parameters(), 1e-4)
+dice_metric = DiceMetric(include_background=False, reduction="mean")
+
