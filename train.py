@@ -35,8 +35,33 @@ import glob
 
 print_config()
 
+
+def match_images_and_labels(images, labels):
+    """
+    Assumes BIDS format.
+    :param images:
+    :param labels:
+    :return:
+    """
+    images_match = []
+    labels_match = []
+    # Loop across images
+    for image in images:
+        # Fetch subject name
+        subject = image.split(os.path.sep)[-1].split("_")[0]
+        # Find equivalent in labels
+        # TODO: check if label has 2 entries
+        label = [j for i, j in enumerate(labels) if subject in j]
+        if label:
+            images_match.append(image)
+            labels_match.append(label[0])
+    return images_match, labels_match
+
+
 # Setup data directory
 data_dir = os.environ.get("PATH_DATA_BASEL_MP2RAGE")
+# TODO: remove hard code
+data_dir = "/Users/julien/data.neuro/basel-mp2rage"
 print(f"Path to data: {data_dir}")
 
 # TODO: check dataset integrity
@@ -47,7 +72,8 @@ print(f"Path to data: {data_dir}")
 train_images = sorted(glob.glob(os.path.join(data_dir, "**", "*_UNIT1.nii.gz"), recursive=True))
 train_labels = \
     sorted(glob.glob(os.path.join(data_dir, "derivatives", "**", "*_lesion-manualNeuroPoly.nii.gz"), recursive=True))
-# TODO: match images and labels
-data_dicts = [{"image": image_name, "label": label_name} for image_name, label_name in zip(train_images, train_labels)]
-train_files, val_files = data_dicts[:-9], data_dicts[-9:]
+train_images_match, train_labels_match = match_images_and_labels(train_images, train_labels)
+data_dicts = [{"image": image_name, "label": label_name}
+              for image_name, label_name in zip(train_images_match, train_labels_match)]
+# train_files, val_files = data_dicts[:-9], data_dicts[-9:]
 
