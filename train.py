@@ -84,14 +84,15 @@ train_files, val_files = data_dicts[:-9], data_dicts[-9:]
 set_determinism(seed=0)
 
 # Setup transforms for training and validation
+# TODO: find a_min/a_max automatically based on histogram distribution.
 train_transforms = Compose(
     [
         LoadImaged(keys=["image", "label"]),
         EnsureChannelFirstd(keys=["image", "label"]),
         ScaleIntensityRanged(
             keys=["image"],
-            a_min=-57,
-            a_max=164,
+            a_min=0,
+            a_max=4095,
             b_min=0.0,
             b_max=1.0,
             clip=True,
@@ -124,8 +125,8 @@ val_transforms = Compose(
         EnsureChannelFirstd(keys=["image", "label"]),
         ScaleIntensityRanged(
             keys=["image"],
-            a_min=-57,
-            a_max=164,
+            a_min=0,
+            a_max=4095,
             b_min=0.0,
             b_max=1.0,
             clip=True,
