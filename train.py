@@ -59,9 +59,10 @@ def match_images_and_labels(images, labels):
 
 
 # Setup data directory
-data_dir = os.environ.get("PATH_DATA_BASEL_MP2RAGE")
-# TODO: remove hard code
-data_dir = "/Users/julien/data.neuro/basel-mp2rage"
+# TODO: parametrize input data dir
+default_data_dir = "/Users/julien/data.neuro/basel-mp2rage"
+env_data_dir = os.environ.get("PATH_DATA_BASEL_MP2RAGE")
+data_dir = tempfile.mkdtemp() if env_data_dir is None else default_data_dir
 print(f"Path to data: {data_dir}")
 # TODO: check dataset integrity
 # data: data.neuro.polymtl.ca:/datasets/basel-mp2rage
