@@ -75,5 +75,62 @@ train_labels = \
 train_images_match, train_labels_match = match_images_and_labels(train_images, train_labels)
 data_dicts = [{"image": image_name, "label": label_name}
               for image_name, label_name in zip(train_images_match, train_labels_match)]
+
+# TODO: This line was in the tutorial-- not sure what is is for
 # train_files, val_files = data_dicts[:-9], data_dicts[-9:]
 
+# Set deterministic training for reproducibility
+set_determinism(seed=0)
+
+# Setup transforms for training and validation
+train_transforms = Compose(
+    [
+        LoadImaged(keys=["image", "label"]),
+        EnsureChannelFirstd(keys=["image", "label"]),
+        ScaleIntensityRanged(
+            keys=["image"],
+            a_min=-57,
+            a_max=164,
+            b_min=0.0,
+            b_max=1.0,
+            clip=True,
+        ),
+        CropForegroundd(keys=["image", "label"], source_key="image"),
+        Orientationd(keys=["image", "label"], axcodes="RAS"),
+        Spacingd(keys=["image", "label"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear", "nearest")),
+        RandCropByPosNegLabeld(
+            keys=["image", "label"],
+            label_key="label",
+            spatial_size=(96, 96, 96),
+            pos=1,
+            neg=1,
+            num_samples=4,
+            image_key="image",
+            image_threshold=0,
+        ),
+        # user can also add other random transforms
+        # RandAffined(
+        #     keys=['image', 'label'],
+        #     mode=('bilinear', 'nearest'),
+        #     prob=1.0, spatial_size=(96, 96, 96),
+        #     rotate_range=(0, 0, np.pi/15),
+        #     scale_range=(0.1, 0.1, 0.1)),
+    ]
+)
+val_transforms = Compose(
+    [
+        LoadImaged(keys=["image", "label"]),
+        EnsureChannelFirstd(keys=["image", "label"]),
+        ScaleIntensityRanged(
+            keys=["image"],
+            a_min=-57,
+            a_max=164,
+            b_min=0.0,
+            b_max=1.0,
+            clip=True,
+        ),
+        CropForegroundd(keys=["image", "label"], source_key="image"),
+        Orientationd(keys=["image", "label"], axcodes="RAS"),
+        Spacingd(keys=["image", "label"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear", "nearest")),
+    ]
+)
