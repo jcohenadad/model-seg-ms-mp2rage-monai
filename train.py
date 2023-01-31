@@ -76,8 +76,9 @@ train_images_match, train_labels_match = match_images_and_labels(train_images, t
 data_dicts = [{"image": image_name, "label": label_name}
               for image_name, label_name in zip(train_images_match, train_labels_match)]
 
-# TODO: This line was in the tutorial-- not sure what is is for
-# train_files, val_files = data_dicts[:-9], data_dicts[-9:]
+# Split train/val
+# TODO: add randomization in the split
+train_files, val_files = data_dicts[:-9], data_dicts[-9:]
 
 # Set deterministic training for reproducibility
 set_determinism(seed=0)
@@ -134,3 +135,19 @@ val_transforms = Compose(
         Spacingd(keys=["image", "label"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear", "nearest")),
     ]
 )
+
+# Check transforms in DataLoader
+check_ds = Dataset(data=val_files, transform=val_transforms)
+check_loader = DataLoader(check_ds, batch_size=1)
+check_data = first(check_loader)
+image, label = (check_data["image"][0][0], check_data["label"][0][0])
+print(f"image shape: {image.shape}, label shape: {label.shape}")
+# plot the slice [:, :, 80]
+plt.figure("check", (12, 6))
+plt.subplot(1, 2, 1)
+plt.title("image")
+plt.imshow(image[80, :, :], cmap="gray")
+plt.subplot(1, 2, 2)
+plt.title("label")
+plt.imshow(label[80, :, :])
+plt.show()
