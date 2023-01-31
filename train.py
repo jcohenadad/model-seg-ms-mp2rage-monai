@@ -195,6 +195,9 @@ metric_values = []
 post_pred = Compose([AsDiscrete(argmax=True, to_onehot=2)])
 post_label = Compose([AsDiscrete(to_onehot=2)])
 
+# To avoid https://github.com/jcohenadad/model-seg-ms-mp2rage-monai/issues/1
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 for epoch in range(max_epochs):
     print("-" * 10)
     print(f"epoch {epoch + 1}/{max_epochs}")
