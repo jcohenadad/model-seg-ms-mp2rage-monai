@@ -303,7 +303,7 @@ scheduler = CosineAnnealingLR(optimizer, T_max=config['max_epochs'], eta_min=1e-
 
 # 🐝 initialize a wandb run
 wandb.init(
-    project="MONAI_Spleen_3D_Segmentation",
+    project="MP2RAGE_MS_lesion_3D_Segmentation",
     config=config
 )
 
@@ -406,7 +406,7 @@ wandb.log({"best_dice_metric": best_metric, "best_metric_epoch": best_metric_epo
 best_model_path = os.path.join(root_dir, "best_metric_model.pth")
 model_artifact = wandb.Artifact(
             "unet", type="model",
-            description="Unet for 3D Segmentation of spleen",
+            description="Unet for 3D Segmentation of MS lesions",
             metadata=dict(config['model_params']))
 model_artifact.add_file(best_model_path)
 wandb.log_artifact(model_artifact)
