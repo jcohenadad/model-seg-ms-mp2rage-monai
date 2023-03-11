@@ -226,11 +226,11 @@ def log_spleen_slices(total_slices=100):
     wandb.log({"Segmentation mask": wandb_mask_logs})
 
 # 🐝 init wandb with appropiate project and run name
-wandb.init(project="MP2RAGE_MS_lesion_3D_Segmentation", name="slice_image_exploration")
+#wandb.init(project="MP2RAGE_MS_lesion_3D_Segmentation", name="slice_image_exploration")
 # 🐝 log images to W&B
-log_spleen_slices(total_slices=100)
+#log_spleen_slices(total_slices=100)
 # 🐝 finish the run
-wandb.finish()
+#wandb.finish()
 
 """# Define Configuration
 
