@@ -242,7 +242,6 @@ config = {
     "cache_rate": 1.0,
     "num_workers": 2,
 
-
     # train settings
     "train_batch_size": 2,
     "val_batch_size": 1,
@@ -250,9 +249,6 @@ config = {
     "max_epochs": 100,
     "val_interval": 10, # check validation score after n epochs
     "lr_scheduler": "cosine_decay", # just to keep track
-
-
-
 
     # Unet model (you can even use nested dictionary and this will be handled by W&B automatically)
     "model_type": "unet", # just to keep track
@@ -298,6 +294,10 @@ loss_function = DiceLoss(to_onehot_y=True, softmax=True)
 optimizer = torch.optim.Adam(model.parameters(), lr=config['learning_rate'])
 dice_metric = DiceMetric(include_background=False, reduction="mean")
 scheduler = CosineAnnealingLR(optimizer, T_max=config['max_epochs'], eta_min=1e-9)
+
+# To avoid https://github.com/jcohenadad/model-seg-ms-mp2rage-monai/issues/1
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 
 """# Execute a typical PyTorch training process"""
 
