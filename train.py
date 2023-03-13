@@ -34,6 +34,7 @@ import os
 import glob
 
 print_config()
+num_workers = 1  # TODO: default: 2
 
 
 def match_images_and_labels(images, labels):
@@ -74,6 +75,9 @@ root_dir = "./"
 
 # Set MSD Spleen dataset path
 train_images = sorted(glob.glob(os.path.join(data_dir, "**", "*_UNIT1.nii.gz"), recursive=True))
+# TODO: debug <<<
+train_images = train_images[-20:]
+# TODO--- debug >>>
 train_labels = \
     sorted(glob.glob(os.path.join(data_dir, "derivatives", "**", "*_lesion-manualNeuroPoly.nii.gz"), recursive=True))
 train_images_match, train_labels_match = match_images_and_labels(train_images, train_labels)
@@ -157,21 +161,22 @@ plt.title("label")
 plt.imshow(label[80, :, :])
 plt.show()
 
+
 # Define CacheDataset and DataLoader for training and validation
-train_ds = CacheDataset(data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=2)
+train_ds = CacheDataset(data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=num_workers)
 # train_ds = Dataset(data=train_files, transform=train_transforms)
 
 # use batch_size=2 to load images and use RandCropByPosNegLabeld
 # to generate 2 x 4 images for network training
-train_loader = DataLoader(train_ds, batch_size=2, shuffle=True, num_workers=2)
+train_loader = DataLoader(train_ds, batch_size=2, shuffle=True, num_workers=num_workers)
 
-val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=2)
+val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=num_workers)
 # val_ds = Dataset(data=val_files, transform=val_transforms)
-val_loader = DataLoader(val_ds, batch_size=1, num_workers=2)
+val_loader = DataLoader(val_ds, batch_size=1, num_workers=num_workers)
 
 # Create Model, Loss, Optimizer
 # standard PyTorch program style: create UNet, DiceLoss and Adam optimizer
-device = torch.device("cuda:0")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = UNet(
     spatial_dims=3,
     in_channels=1,
